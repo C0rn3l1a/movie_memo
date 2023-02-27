@@ -1,0 +1,29 @@
+@startuml Movies List
+
+title Movies List
+
+together {
+  class user_movie {
+    id: number
+    movie_id: number
+    user_id: UUID
+    title: string
+    seen: boolean
+    watch_again: boolean
+    rating: number
+    created_on: datetime
+    updated_on: datetime
+  }
+  
+  class user {
+    id: UUID
+    username: string
+    created_on: datetime
+    updated_on: datetime
+  }
+
+}
+
+user *-- user_movie_entrie : > has
+
+@enduml

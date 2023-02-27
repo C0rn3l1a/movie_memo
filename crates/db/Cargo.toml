@@ -1,0 +1,23 @@
+[package]
+name = "movie_memo_db"
+version.workspace = true
+edition.workspace = true
+description.workspace = true
+license.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+repository.workspace = true
+
+
+[lib]
+name = "movie_memo_db"
+path = "src/lib.rs"
+doctest = false
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dotenv = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+sqlx = { workspace = true, features = [ "runtime-actix-native-tls" , "postgres", "chrono", "time" ] }
+chrono = { workspace = true, features = [ "serde" ] }
+reqwest = { workspace = true }

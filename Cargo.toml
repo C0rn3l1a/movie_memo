@@ -1,0 +1,45 @@
+[workspace.package]
+authors = ["Nacho"]
+version = "0.1.0"
+edition = "2021"
+description = "A list of movies"
+license = "AGPL-3.0"
+homepage = "https://example.com/"
+documentation = "https://example.com/docs"
+repository = "https://github.com/example/movie_memo"
+
+[package]
+name = "movie_memo"
+version.workspace = true
+edition.workspace = true
+description.workspace = true
+license.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+repository.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# TODO: lookup how to integrate with tokio
+[dependencies]
+movie_memo_db = { workspace = true }
+actix-web = { workspace = true }
+dotenv = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+sqlx = { workspace = true }
+chrono = { workspace = true }
+
+[workspace]
+members = [
+    "crates/db",
+]
+
+[workspace.dependencies]
+movie_memo_db = { version = "=0.1", path = "./crates/db" }
+actix-web = "4"
+dotenv = "0.15.0"
+reqwest = { version = "0.11", features = ["blocking","json"] }
+serde = { version = "1.0", features = ["derive"] }
+sqlx = { version = "0.6", features = [ "runtime-actix-native-tls" , "postgres", "chrono", "time" ] }
+chrono = { version = "0.4", features = [ "serde" ] }
