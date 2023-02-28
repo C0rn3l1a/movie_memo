@@ -18,6 +18,7 @@ doctest = false
 [dependencies]
 dotenv = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-sqlx = { workspace = true, features = [ "runtime-actix-native-tls" , "postgres", "chrono", "time" ] }
+sqlx = { workspace = true, features = [ "runtime-actix-native-tls" , "postgres", "chrono", "time", "uuid" ] }
 chrono = { workspace = true, features = [ "serde" ] }
 reqwest = { workspace = true }
+uuid = { workspace = true, features = [ "v4" ,"serde" ] }

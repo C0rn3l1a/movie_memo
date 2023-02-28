@@ -3,8 +3,8 @@ use dotenv::dotenv;
 use actix_web::{get, web, App, HttpResponse, HttpServer, post};
 use serde::Deserialize;
 
-use movie_memo_db::connection::get_connection; // TODO: move schemas and db related stuff to "db" crates
 use movie_memo_db::schemas::movie; // TODO: move schemas and db related stuff to "db" crates
+use movie_memo_db::schemas::user::User; // TODO: move schemas and db related stuff to "db" crates
 use movie_memo_db::schemas::user_movies::UserMovie; // TODO: move schemas and db related stuff to "db" crates
 
 
@@ -44,15 +44,15 @@ async fn fetch_url2(params: web::Path<GetUserMoviesParams>) -> HttpResponse {
 
 #[derive(Deserialize)]
 struct CreateUserRequest {
-    search: String,
+    username: String,
 }
 
 #[post("/user")]
 async fn create_user(req_body: web::Json<CreateUserRequest>) -> HttpResponse {
     
-    println!("[POST] /user - BODY: {}",&req_body.search);
+    println!("[POST] /user - BODY: {}",&req_body.username);
 
-    match movie::fetch_movie_info(&req_body.search).await {
+    match User::new(&req_body.username).await {
         Ok(movie) => HttpResponse::Ok().json(movie),
         Err(err) => {
             println!("Unhandled Error: {:?}",err);
@@ -71,6 +71,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(fetch_url)
             .service(fetch_url2)
+            .service(create_user)
     })
     .bind(("127.0.0.1", port_number))?
     .run()
