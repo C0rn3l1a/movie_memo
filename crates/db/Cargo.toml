@@ -22,3 +22,4 @@ sqlx = { workspace = true, features = [ "runtime-actix-native-tls" , "postgres",
 chrono = { workspace = true, features = [ "serde" ] }
 reqwest = { workspace = true }
 uuid = { workspace = true, features = [ "v4" ,"serde" ] }
+error-stack = { workspace = true }

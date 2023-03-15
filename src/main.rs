@@ -53,10 +53,9 @@ async fn create_user(req_body: web::Json<CreateUserRequest>) -> HttpResponse {
     println!("[POST] /user - BODY: {}",&req_body.username);
 
     match User::new(&req_body.username).await {
-        Ok(movie) => HttpResponse::Ok().json(movie),
+        Ok(user) => HttpResponse::Ok().json(user),
         Err(err) => {
-            println!("Unhandled Error: {:?}",err);
-            HttpResponse::NotFound().body("Not found")
+            HttpResponse::NotFound().body("Error creating user")// try to better handle error
         },
     }
 }
