@@ -3,9 +3,9 @@ use dotenv::dotenv;
 use actix_web::{get, web, App, HttpResponse, HttpServer, post};
 use serde::Deserialize;
 
-use movie_memo_db::schemas::movie; // TODO: move schemas and db related stuff to "db" crates
-use movie_memo_db::schemas::user::User; // TODO: move schemas and db related stuff to "db" crates
-use movie_memo_db::schemas::user_movies::UserMovie; // TODO: move schemas and db related stuff to "db" crates
+use movie_memo_db::schemas::movie;
+use movie_memo_db::schemas::user::{User, UserError};
+use movie_memo_db::schemas::user_movies::UserMovie;
 
 
 #[derive(Deserialize)]
@@ -55,7 +55,14 @@ async fn create_user(req_body: web::Json<CreateUserRequest>) -> HttpResponse {
     match User::new(&req_body.username).await {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(err) => {
-            HttpResponse::NotFound().body("Error creating user")// try to better handle error
+            let context = err.current_context().clone();
+
+            match context {
+                UserError::AlreadyExists(msg) => HttpResponse::BadRequest().body(format!("{}", msg)),
+                UserError::InvalidArguments(msg) => HttpResponse::BadRequest().body(format!("{}", msg)),
+                UserError::NotFound(msg) => HttpResponse::NotFound().body(format!("{}", msg)),
+                UserError::SqlxError => HttpResponse::InternalServerError().body("Something went wrong. Try Again later")
+            }
         },
     }
 }

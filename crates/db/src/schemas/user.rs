@@ -15,6 +15,7 @@ pub enum UserError {
     NotFound(String),
 }
 
+// Define [UserError] struct
 impl fmt::Display for UserError {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -58,7 +59,7 @@ impl User {
             .fetch_one(&pool)
             .await
             .map_err(|error| {
-                let message = String::from("User creation failed with params: ({username})");
+                let message = format!("User creation failed with params: ({})", username);
                 Report::new(UserError::InvalidArguments(message.clone())).attach_printable(message.clone()).attach(error)
             })?;
 
@@ -81,5 +82,22 @@ impl User {
                 Err(Report::new(UserError::SqlxError).attach_printable(message).attach(error))
             }
         }
+    }
+
+    pub async fn get_by_id(user_id: &Uuid) -> Result<User, UserError>{
+        let pool = get_connection_pool().await.map_err(|error| {
+            let message = format!("Sqlx Error on [ get_connection_pool ] : {error}");
+            error.change_context(UserError::SqlxError).attach_printable(message)
+        })?;
+        
+        let user = sqlx::query_as!(User,"SELECT * FROM public.user u where u.id = $1;", user_id)
+            .fetch_one(&pool)
+            .await
+            .map_err(|error| {
+                let message = format!("User query failed with params: ({})", user_id);
+                Report::new(UserError::InvalidArguments(message.clone())).attach_printable(message.clone()).attach(error)
+            })?;
+
+        Ok(user)
     }
 }
