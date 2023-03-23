@@ -5,7 +5,8 @@ use serde::Deserialize;
 
 use movie_memo_db::schemas::movie;
 use movie_memo_db::schemas::user::{User, UserError};
-use movie_memo_db::schemas::user_movies::UserMovie;
+use movie_memo_db::schemas::user_movies::{UserMovie, UserMovieError};
+use sqlx::types::Uuid;
 
 
 #[derive(Deserialize)]
@@ -29,7 +30,7 @@ async fn fetch_url(req_body: web::Query<FetchRequest>) -> HttpResponse {
 
 #[derive(Deserialize)]
 struct GetUserMoviesParams {
-    user_id: i32,
+    user_id: Uuid,
 }
 
 #[get("/user/{user_id}/movies")]
@@ -37,9 +38,19 @@ async fn fetch_url2(params: web::Path<GetUserMoviesParams>) -> HttpResponse {
     
     println!("[GET] /user/{}/movies", params.user_id);
 
-    let user_movies = UserMovie::get_by_user_id(params.user_id);
-    
-    HttpResponse::Ok().json(user_movies)
+    match UserMovie::get_by_user_id(&params.user_id).await {
+        Ok(movies) => HttpResponse::Ok().json(movies),
+        Err(err) => {
+            let context = err.current_context().clone();
+
+            match context {
+                UserMovieError::AlreadyExists(msg) => HttpResponse::BadRequest().body(format!("{}", msg)),
+                UserMovieError::InvalidArguments(msg) => HttpResponse::BadRequest().body(format!("{}", msg)),
+                UserMovieError::NotFound(msg) => HttpResponse::NotFound().body(format!("{}", msg)),
+                UserMovieError::SqlxError => HttpResponse::InternalServerError().body("Something went wrong. Try Again later")
+            }
+        },
+    }
 }
 
 #[derive(Deserialize)]

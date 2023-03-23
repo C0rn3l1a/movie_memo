@@ -1,0 +1,7 @@
+# @user_id = f69b2273-3a98-4cb9-9f1c-d4d4d4b4cc22
+@user_id = 84cb5b5c-70cb-4c5f-b9a7-86efbe541b1a
+
+###
+# Get By User Id
+GET {{HOST}}/user/{{user_id}}/movies HTTP/1.1
+Content-Type: application/json
