@@ -1,0 +1,21 @@
+@movie_title = "NOPE"
+# Query for the movie to get the Id first
+# @name query_movie
+GET https://api.themoviedb.org/3//search/movie?api_key={{API_KEY_V3}}&query={{movie_title}} HTTP/1.1
+Content-Type: application/json
+
+###
+
+@movie_id = {{query_movie.response.body.results[0].id}}
+@title = {{query_movie.response.body.results[0].title}}
+# nacho
+@user_id = ce873984-f1ef-484f-8c48-dfc68d4e7d16 
+
+# Create User
+POST {{HOST}}/user/{{user_id}}/movies HTTP/1.1
+Content-Type: application/json
+
+{
+    "movie_id":{{movie_id}},
+    "title":"{{title}}"
+}
